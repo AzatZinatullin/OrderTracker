@@ -1,0 +1,142 @@
+version: '3.8'
+
+services:
+  #База данных заказов (PostgreSQL)
+  order-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ordersdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker-volumes/orderdata:/var/lib/postgresql/data
+    networks:
+      - ordertracker-network
+
+  #База данных уведомлений (PostgreSQL)
+  notification-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: notificationsdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./docker-volumes/notificationdata:/var/lib/postgresql/data
+    networks:
+      - ordertracker-network
+
+  #Брокер сообщений (RabbitMQ)
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - ordertracker-network
+
+  #Система мониторинга (Jaeger)
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686"
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      - ordertracker-network
+
+  #Сервис заказов (ASP.NET Core)
+  order-service:
+    build:
+      context: ./backend
+      dockerfile: src/OrderTracker.OrderService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=80
+      - ConnectionStrings__DefaultConnection=Host=order-db;Port=5432;Database=ordersdb;Username=postgres;Password=postgres
+      - ConnectionStrings__RabbitMq=amqp://guest:guest@rabbitmq:5672/
+      - OpenTelemetry__OtlpEndpoint=http://jaeger:4317
+    ports:
+      - "5001:80"
+    depends_on:
+      order-db:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
+    networks:
+      - ordertracker-network
+
+  #Сервис уведомлений (ASP.NET Core)
+  notification-service:
+    build:
+      context: ./backend
+      dockerfile: src/OrderTracker.NotificationService/Dockerfile
+    environment:
+      - ASPNETCORE_HTTP_PORTS=80
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=notification-db;Port=5432;Database=notificationsdb;Username=postgres;Password=postgres
+      - ConnectionStrings__RabbitMq=amqp://guest:guest@rabbitmq:5672/
+      - OpenTelemetry__OtlpEndpoint=http://jaeger:4317
+    ports:
+      - "5002:80"
+    depends_on:
+      notification-db:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+      jaeger:
+        condition: service_started
+    networks:
+      - ordertracker-network
+
+  #API Gateway (ASP.NET Core)
+  api-gateway:
+    build:
+      context: ./backend
+      dockerfile: src/OrderTracker.ApiGateway/Dockerfile
+    environment:
+      - ASPNETCORE_HTTP_PORTS=80
+      - OpenTelemetry__OtlpEndpoint=http://jaeger:4317
+    ports:
+      - "5000:80"
+    depends_on:
+      - order-service
+      - notification-service
+      - jaeger
+    networks:
+      - ordertracker-network
+
+  #Фронтенд (React)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - api-gateway
+    networks:
+      - ordertracker-network
+
+networks:
+  ordertracker-network:
+    driver: bridge
+
+volumes:
+  orderdata:
+  notificationdata:

@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/OrderTracker.ApiGateway/OrderTracker.ApiGateway.csproj" />
+    <Project Path="src/OrderTracker.NotificationService/OrderTracker.NotificationService.csproj" />
+    <Project Path="src/OrderTracker.OrderService/OrderTracker.OrderService.csproj" />
+    <Project Path="src/OrderTracker.Shared/OrderTracker.Shared.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OrderTracker.NotificationService.Tests/OrderTracker.NotificationService.Tests.csproj" />
+    <Project Path="tests/OrderTracker.OrderService.Tests/OrderTracker.OrderService.Tests.csproj" />
+  </Folder>
+</Solution>

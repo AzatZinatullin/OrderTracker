@@ -1,0 +1,63 @@
+using Microsoft.AspNetCore.SignalR;
+
+namespace OrderTracker.NotificationService.Hubs;
+
+/// <summary>
+/// Хаб для отслеживания заказов
+/// </summary>
+public class OrderTrackingHub : Hub
+{
+    private readonly ILogger<OrderTrackingHub> _logger;
+
+    /// <summary>
+    /// Инициализирует новый экземпляр класса <see cref="OrderTrackingHub"/>.
+    /// </summary>
+    /// <param name="logger">Логгер.</param>
+    public OrderTrackingHub(ILogger<OrderTrackingHub> logger)
+    {
+        _logger = logger;
+    }
+
+    /// <summary>
+    /// Вызывается при подключении нового клиента.
+    /// </summary>
+    /// <returns>Задача, представляющая асинхронное подключение.</returns>
+    public override Task OnConnectedAsync()
+    {
+        _logger.LogInformation("Client connected: {ConnectionId}", Context.ConnectionId);
+        return base.OnConnectedAsync();
+    }
+
+    /// <summary>
+    /// Вызывается при отключении клиента.
+    /// </summary>
+    /// <param name="exception">Исключение, вызвавшее отключение (если есть).</param>
+    /// <returns>Задача, представляющая асинхронное отключение.</returns>
+    public override Task OnDisconnectedAsync(Exception? exception)
+    {
+        _logger.LogInformation("Client disconnected: {ConnectionId}", Context.ConnectionId);
+        return base.OnDisconnectedAsync(exception);
+    }
+
+    /// <summary>
+    /// Подписывает клиента на обновления по конкретному заказу через механизм групп.
+    /// </summary>
+    /// <param name="orderId">Идентификатор заказа.</param>
+    /// <returns>Задача, представляющая асинхронную операцию присоединения к группе.</returns>
+    public async Task JoinOrderGroup(string orderId)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, $"order-{orderId}");
+        _logger.LogInformation("Connection {ConnectionId} joined group order-{OrderId}", Context.ConnectionId, orderId);
+    }
+
+    /// <summary>
+    /// Отписывает клиента от обновлений по конкретному заказу.
+    /// </summary>
+    /// <param name="orderId">Идентификатор заказа.</param>
+    /// <returns>Задача, представляющая асинхронную операцию выхода из группы.</returns>
+    public async Task LeaveOrderGroup(string orderId)
+    {
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"order-{orderId}");
+        _logger.LogInformation("Connection {ConnectionId} left group order-{OrderId}", Context.ConnectionId, orderId);
+    }
+}
