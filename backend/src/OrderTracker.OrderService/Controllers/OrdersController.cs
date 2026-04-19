@@ -38,7 +38,8 @@ public class OrdersController : ControllerBase
         var validationResult = validator.Validate(request);
         if (!validationResult.IsValid)
         {
-            // Для простоты и скорости реализации ошибки в виде строки.
+            // Упрощение для тестового задания: объединяем ошибки в одну строку. 
+            // В реальном проекте лучше возвращать ValidationProblemDetails или словарь ошибок.
             return BadRequest(string.Join(", ", validationResult.Errors.Select(x => x.ErrorMessage)));
         }
 
@@ -95,7 +96,8 @@ public class OrdersController : ControllerBase
         var validationResult = validator.Validate(request);
         if (!validationResult.IsValid)
         {
-            // Для простоты и скорости реализации ошибки в виде строки.
+            // Упрощение для тестового задания: объединяем ошибки в одну строку. 
+            // В реальном проекте лучше возвращать ValidationProblemDetails или словарь ошибок.
             return BadRequest(string.Join(", ", validationResult.Errors.Select(x => x.ErrorMessage)));
         }
 
