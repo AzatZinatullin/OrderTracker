@@ -32,10 +32,10 @@ public class OrderDeletedConsumer : IConsumer<OrderDeletedEvent>
     {
         _logger.LogInformation("Consuming OrderDeletedEvent for Order {OrderId}", context.Message.OrderId);
 
-        // Notify all clients about the deletion
+        // Уведомить всех клиентов об удалении
         await _hubContext.Clients.All.SendAsync("OrderDeleted", context.Message);
         
-        // Also notify the specific group (if any clients are still listening)
+        // Уведомить конкретную группу (если есть слушатели)
         await _hubContext.Clients.Group($"order-{context.Message.OrderId}")
             .SendAsync("OrderDeleted", context.Message);
     }

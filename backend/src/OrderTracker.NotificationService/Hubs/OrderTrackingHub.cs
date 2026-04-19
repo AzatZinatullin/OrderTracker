@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 namespace OrderTracker.NotificationService.Hubs;
 
 /// <summary>
-/// Хаб для отслеживания заказов
+/// Хаб для отслеживания заказов.
 /// </summary>
 public class OrderTrackingHub : Hub
 {
@@ -43,7 +43,6 @@ public class OrderTrackingHub : Hub
     /// Подписывает клиента на обновления по конкретному заказу через механизм групп.
     /// </summary>
     /// <param name="orderId">Идентификатор заказа.</param>
-    /// <returns>Задача, представляющая асинхронную операцию присоединения к группе.</returns>
     public async Task JoinOrderGroup(string orderId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, $"order-{orderId}");
@@ -54,7 +53,6 @@ public class OrderTrackingHub : Hub
     /// Отписывает клиента от обновлений по конкретному заказу.
     /// </summary>
     /// <param name="orderId">Идентификатор заказа.</param>
-    /// <returns>Задача, представляющая асинхронную операцию выхода из группы.</returns>
     public async Task LeaveOrderGroup(string orderId)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"order-{orderId}");

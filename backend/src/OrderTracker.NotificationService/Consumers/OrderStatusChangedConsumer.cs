@@ -36,8 +36,7 @@ public class OrderStatusChangedConsumer : IConsumer<OrderStatusChangedEvent>
             context.Message.OrderId, context.Message.NewStatus);
             
         // Уведомляем клиентов, просматривающих конкретный заказ
-        await _hubContext.Clients.Group($"order-{context.Message.OrderId}")
-            .SendAsync("OrderStatusUpdated", context.Message);
+        await _hubContext.Clients.Group($"order-{context.Message.OrderId}").SendAsync("OrderStatusUpdated", context.Message);
 
         // Уведомляем всех клиентов для обновлений в общем списке
         await _hubContext.Clients.All.SendAsync("OrderStatusUpdatedAll", context.Message);

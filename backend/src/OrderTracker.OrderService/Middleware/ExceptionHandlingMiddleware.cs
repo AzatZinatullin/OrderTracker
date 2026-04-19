@@ -7,17 +7,29 @@ using System.Text.Json;
 
 namespace OrderTracker.OrderService.Middleware;
 
+/// <summary>
+/// Middleware для обработки исключений и отправки стандартизированных ответов об ошибках.
+/// </summary>
 public class ExceptionHandlingMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
+    /// <summary>
+    /// Инициализирует новый экземпляр класса <see cref="ExceptionHandlingMiddleware"/>.
+    /// </summary>
+    /// <param name="next">Делегат, представляющий следующий middleware в конвейере.</param>
+    /// <param name="logger">Логгер для записи исключений.</param>
     public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger)
     {
         _next = next;
         _logger = logger;
     }
 
+    /// <summary>
+    /// Выполняет обработку исключений для HTTP-запроса.
+    /// </summary>
+    /// <param name="context">HTTP-контекст запроса.</param>
     public async Task InvokeAsync(HttpContext context)
     {
         try
@@ -31,6 +43,11 @@ public class ExceptionHandlingMiddleware
         }
     }
 
+    /// <summary>
+    /// Обрабатывает исключение и устанавливает соответствующий HTTP-ответ.
+    /// </summary>
+    /// <param name="context">HTTP-контекст запроса.</param>
+    /// <param name="exception">Обрабатываемое исключение.</param>
     private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         var statusCode = exception switch

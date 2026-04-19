@@ -33,7 +33,7 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
     {
         _logger.LogInformation("Received OrderCreatedEvent for Order {OrderId}", context.Message.OrderId);
         
-        // Notify all clients that a new order has been created
+        // Уведомить всех клиентов о создании нового заказа
         await _hubContext.Clients.All.SendAsync("OrderCreated", context.Message);
     }
 }
