@@ -1,20 +1,20 @@
 # Order Tracking Application
 
-Event-driven microservices architecture for tracking orders, built with .NET 10, React, SignalR, RabbitMQ, and PostgreSQL.
+Событийно-ориентированная микросервисная архитектура для отслеживания заказов, построенная на .NET 10, React, SignalR, RabbitMQ и PostgreSQL.
 
-## Architecture
+## Архитектура
 
-- **OrderService**: Manages the core order domain using EF Core and PostgreSQL. Publishes domain events to RabbitMQ.
-- **NotificationService**: Consumes events from RabbitMQ and pushes real-time updates to connected clients via SignalR.
-- **ApiGateway**: Central piece (YARP) that routes frontend traffic to appropriate microservices.
-- **Frontend**: React SPA using Vite, TailwindCSS, and Zustand. Real-time updates delivered smoothly via SignalR.
-- **Observability**: OpenTelemetry tracing sent to Jaeger.
+- **OrderService**: Управляет основным доменом заказов с использованием EF Core и PostgreSQL. Публикует доменные события в RabbitMQ.
+- **NotificationService**: Обрабатывает события из RabbitMQ и отправляет обновления в реальном времени подключенным клиентам через SignalR.
+- **ApiGateway**: Центральный узел (YARP), который маршрутизирует трафик фронтенда в соответствующие микросервисы.
+- **Frontend**: React SPA на базе Vite, TailwindCSS и Zustand. Обновления в реальном времени доставляются через SignalR.
+- **Observability**: Трассировка OpenTelemetry отправляется в Jaeger.
 
-## Configuration & Tooling
+## Конфигурация и инструменты
 
-To run this application locally, you'll need Docker.
+Для запуска приложения локально вам понадобится Docker.
 
-## Run Locally (Docker)
+## Запуск локально (Docker)
 
 ```bash
 docker-compose up --build
@@ -25,13 +25,13 @@ docker-compose up --build
 - **Frontend Application**: http://localhost:3000
 - **API Gateway**: http://localhost:5000
 - **Jaeger Tracing UI**: http://localhost:16686
-- **RabbitMQ Management**: http://localhost:15672 (guest / guest)
+- **RabbitMQ Management**: http://localhost:15672
 - **Order Service**: http://localhost:5001/swagger
 
-## Project Details
+## Структура проекта
 
-- `/backend/src/OrderTracker.OrderService` - Order domain and infrastructure
-- `/backend/src/OrderTracker.NotificationService` - RabbitMQ consumers and SignalR Hub
-- `/backend/src/OrderTracker.ApiGateway` - YARP configuration
-- `/backend/src/OrderTracker.Shared` - C# Records / Events 
+- `/backend/src/OrderTracker.OrderService` - Домен и инфраструктура заказов
+- `/backend/src/OrderTracker.NotificationService` - Обработчики RabbitMQ и SignalR Hub
+- `/backend/src/OrderTracker.ApiGateway` - Конфигурация YARP
+- `/backend/src/OrderTracker.Shared` - C# Records / Events / Exceptions
 - `/frontend` - React 18, Vite, Tailwind CSS, TypeScript
