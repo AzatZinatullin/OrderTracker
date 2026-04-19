@@ -3,18 +3,30 @@ import * as signalR from '@microsoft/signalr';
 import { useOrderStore } from '../store/OrderStore';
 import toast from 'react-hot-toast';
 
+/**
+ * URL хаба SignalR (можно вынести в .env)
+ */
 const HUB_URL = 'http://localhost:5000/hub/order-tracking';
 
+/**
+ * Хук для работы с SignalR
+ * @param orderIdScope - ID заказа для подписки на обновления
+ * @param enableToasts - включить/выключить тосты
+ */
 export function useSignalR(orderIdScope?: string, enableToasts: boolean = true) {
   const [connection, setConnection] = useState<signalR.HubConnection | null>(
     null,
   );
+
   const {
     handleOrderCreated,
     handleOrderStatusUpdated,
     handleOrderDeleted,
   } = useOrderStore();
 
+  /**
+   * Создание соединения с SignalR
+   */
   useEffect(() => {
     const newConnection = new signalR.HubConnectionBuilder()
       .withUrl(HUB_URL)
@@ -24,6 +36,9 @@ export function useSignalR(orderIdScope?: string, enableToasts: boolean = true) 
     setConnection(newConnection);
   }, []);
 
+  /**
+   * Обработка событий SignalR
+   */
   useEffect(() => {
     if (!connection) return;
 
@@ -36,6 +51,9 @@ export function useSignalR(orderIdScope?: string, enableToasts: boolean = true) 
           connection.invoke('JoinOrderGroup', orderIdScope);
         }
 
+        /**
+         * Обработчик создания заказа
+         */
         connection.on('OrderCreated', (event) => {
           console.log('SignalR: OrderCreated received', event);
           handleOrderCreated({
@@ -51,6 +69,9 @@ export function useSignalR(orderIdScope?: string, enableToasts: boolean = true) 
           }
         });
 
+        /**
+         * Обработчик обновления статуса заказа
+         */
         connection.on('OrderStatusUpdatedAll', (event) => {
           console.log('SignalR: OrderStatusUpdatedAll received', event);
           handleOrderStatusUpdated({
@@ -58,6 +79,7 @@ export function useSignalR(orderIdScope?: string, enableToasts: boolean = true) 
             newStatus: event.newStatus,
             updatedAt: event.updatedAt,
           });
+
           if (enableToasts) {
             toast(`Заказ ${event.orderNumber} изменил статус на ${event.newStatus}`, {
               icon: '🔄',
@@ -65,6 +87,9 @@ export function useSignalR(orderIdScope?: string, enableToasts: boolean = true) 
           }
         });
 
+        /**
+         * Обработчик обновления статуса заказа
+         */
         connection.on('OrderStatusUpdated', (event) => {
           console.log('SignalR: OrderStatusUpdated (Group) received', event);
           handleOrderStatusUpdated({
@@ -74,6 +99,9 @@ export function useSignalR(orderIdScope?: string, enableToasts: boolean = true) 
           });
         });
 
+        /**
+         * Обработчик удаления заказа
+         */
         connection.on('OrderDeleted', (event) => {
           console.log('SignalR: OrderDeleted received', event);
           handleOrderDeleted(event.orderId);

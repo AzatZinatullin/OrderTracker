@@ -4,6 +4,9 @@ import { OrderStatusBadge } from '../components/OrderStatusBadge';
 import { Link } from 'react-router-dom';
 import { Plus, ChevronRight, Package, Calendar, Trash2 } from 'lucide-react';
 
+/**
+ * Домашняя страница
+ */
 export default function HomePage() {
   const { orders, fetchOrders, createOrder, deleteOrder, isLoading } = useOrderStore();
   const [description, setDescription] = useState('');
@@ -13,18 +16,30 @@ export default function HomePage() {
     fetchOrders();
   }, [fetchOrders]);
 
+  /**
+   * Обработчик создания заказа
+   * @param e Событие формы
+   */
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!description.trim()) return;
+
     setIsCreating(true);
     await createOrder(description);
+
     setDescription('');
     setIsCreating(false);
   };
 
+  /**
+   * Обработчик удаления заказа
+   * @param id Идентификатор заказа
+   * @param e Событие мыши
+   */
   const handleDelete = async (id: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
     if (confirm('Вы уверены, что хотите удалить этот заказ?')) {
       await deleteOrder(id);
     }
@@ -94,6 +109,7 @@ export default function HomePage() {
                     <div className='bg-indigo-50 text-indigo-700 p-3 rounded-xl shadow-inner group-hover:bg-indigo-100 transition-colors'>
                       <Package size={24} />
                     </div>
+
                     <div>
                       <div className='flex items-center gap-2'>
                         <p className='text-sm font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors'>
@@ -118,6 +134,7 @@ export default function HomePage() {
                       </div>
                     </div>
                   </div>
+
                   <div className='ml-5 flex-shrink-0 flex items-center gap-4'>
                     <button
                       onClick={(e) => handleDelete(order.id, e)}

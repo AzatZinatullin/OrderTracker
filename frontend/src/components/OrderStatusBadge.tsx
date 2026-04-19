@@ -2,6 +2,20 @@ import type { OrderStatus } from '../types/Order';
 import clsx from 'clsx';
 import { CheckCircle2, Clock, Package, XCircle } from 'lucide-react';
 
+/**
+ * Метки статусов
+ */
+const statusLabels: Record<OrderStatus, string> = {
+  Created: 'Создан',
+  Shipped: 'Отправлен',
+  Delivered: 'Доставлен',
+  Cancelled: 'Отменен',
+};
+
+/**
+ * Компонент для отображения статуса заказа
+ * @param status - Статус заказа
+ */
 export function OrderStatusBadge({ status }: { status: OrderStatus }) {
   const isCreated = status === 'Created';
   const isShipped = status === 'Shipped';
@@ -15,13 +29,6 @@ export function OrderStatusBadge({ status }: { status: OrderStatus }) {
       : isDelivered
         ? CheckCircle2
         : XCircle;
-
-  const statusLabels: Record<OrderStatus, string> = {
-    Created: 'Создан',
-    Shipped: 'Отправлен',
-    Delivered: 'Доставлен',
-    Cancelled: 'Отменен',
-  };
 
   return (
     <span

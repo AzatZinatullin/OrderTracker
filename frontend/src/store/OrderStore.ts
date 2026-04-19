@@ -1,8 +1,11 @@
 import { create } from 'zustand';
-import { orderApi } from '../api/orderApi';
 import type { OrderResponse, OrderStatus } from '../types/Order';
 import toast from 'react-hot-toast';
+import { orderApi } from '../api/orderApi';
 
+/**
+ * Состояние заказов
+ */
 interface OrderState {
   orders: OrderResponse[];
   currentOrder: OrderResponse | null;
@@ -12,7 +15,7 @@ interface OrderState {
   fetchOrderById: (id: string) => Promise<void>;
   createOrder: (description: string) => Promise<void>;
   updateOrderStatus: (id: string, newStatus: OrderStatus) => Promise<void>;
-  // Real-time integration methods
+
   handleOrderCreated: (order: OrderResponse) => void;
   handleOrderStatusUpdated: (payload: {
     orderId: string;
@@ -23,12 +26,18 @@ interface OrderState {
   handleOrderDeleted: (orderId: string) => void;
 }
 
+/**
+ * Создание хранилища заказов
+ */
 export const useOrderStore = create<OrderState>((set) => ({
   orders: [],
   currentOrder: null,
   isLoading: false,
   error: null,
 
+  /**
+   * Загрузка всех заказов
+   */
   fetchOrders: async () => {
     set({ isLoading: true, error: null });
     try {
@@ -42,6 +51,10 @@ export const useOrderStore = create<OrderState>((set) => ({
     }
   },
 
+  /**
+   * Загрузка заказа по идентификатору
+   * @param id Идентификатор заказа
+   */
   fetchOrderById: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
@@ -55,12 +68,16 @@ export const useOrderStore = create<OrderState>((set) => ({
     }
   },
 
+  /**
+   * Создание заказа
+   * @param description Описание заказа
+   */
   createOrder: async (description: string) => {
     set({ isLoading: true, error: null });
     try {
       await orderApi.createOrder({ description });
       toast.success('Заказ успешно создан!');
-      // Real-time will push it to the list
+      
       set({ isLoading: false });
     } catch (error: any) {
       set({
@@ -71,6 +88,11 @@ export const useOrderStore = create<OrderState>((set) => ({
     }
   },
 
+  /**
+   * Обновление статуса заказа
+   * @param id Идентификатор заказа
+   * @param newStatus Новый статус
+   */
   updateOrderStatus: async (id: string, newStatus: OrderStatus) => {
     try {
       await orderApi.updateOrderStatus(id, { newStatus });
@@ -80,24 +102,34 @@ export const useOrderStore = create<OrderState>((set) => ({
     }
   },
 
+  /**
+   * Удаление заказа
+   * @param id Идентификатор заказа
+   */
   deleteOrder: async (id: string) => {
     try {
       await orderApi.deleteOrder(id);
-      // Real-time will handle the list update
     } catch (error: any) {
       toast.error('Не удалось удалить заказ');
       throw error;
     }
   },
 
+  /**
+   * Обработчик создания заказа
+   * @param newOrder Новый заказ
+   */
   handleOrderCreated: (newOrder: OrderResponse) => {
     set((state) => {
-      // Avoid duplicates just in case
       if (state.orders.some((o) => o.id === newOrder.id)) return state;
       return { orders: [newOrder, ...state.orders] };
     });
   },
 
+  /**
+   * Обработчик обновления статуса заказа
+   * @param payload Данные об обновлении статуса
+   */
   handleOrderStatusUpdated: (payload) => {
     set((state) => {
       const updatedOrders = state.orders.map((o) =>
@@ -119,6 +151,10 @@ export const useOrderStore = create<OrderState>((set) => ({
     });
   },
 
+  /**
+   * Обработчик удаления заказа
+   * @param orderId Идентификатор заказа
+   */
   handleOrderDeleted: (orderId: string) => {
     set((state) => ({
       orders: state.orders.filter((o) => o.id !== orderId),

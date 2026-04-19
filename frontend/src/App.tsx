@@ -4,16 +4,14 @@ import HomePage from './pages/HomePage';
 import OrderPage from './pages/OrderPage';
 import { useSignalR } from './hooks/useSignalR';
 
-// Global SignalR connection for the whole app
-function GlobalSignalR() {
-  useSignalR();
-  return null;
-}
-
+/**
+ * Основной компонент приложения
+ */
 function App() {
+  useSignalR();
+  
   return (
     <Router>
-      <GlobalSignalR />
       <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-indigo-200">
         <header className="bg-white border-b border-slate-200 sticky top-0 z-10 backdrop-blur-sm bg-white/80">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">

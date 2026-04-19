@@ -5,16 +5,23 @@ import { OrderStatusBadge } from '../components/OrderStatusBadge';
 import type { OrderStatus } from '../types/Order';
 import { ArrowLeft, Check, Truck, XCircle, Clock } from 'lucide-react';
 import clsx from 'clsx';
-import { useSignalR } from '../hooks/useSignalR';
 
+/**
+ * Шаги отслеживания заказа
+ */
+const steps = [
+  { status: 'Created' as OrderStatus, label: 'Создан', icon: Clock },
+  { status: 'Shipped' as OrderStatus, label: 'Отправлен', icon: Truck },
+  { status: 'Delivered' as OrderStatus, label: 'Доставлен', icon: Check },
+];
+
+/**
+ * Страница заказа
+ */
 export default function OrderPage() {
   const { id } = useParams<{ id: string }>();
   const { currentOrder, fetchOrderById, updateOrderStatus, isLoading } =
     useOrderStore();
-
-  // Subscribe to specific order updates via SignalR group
-  // Disable duplicate toasts because GlobalSignalR already handles them
-  useSignalR(id, false);
 
   useEffect(() => {
     if (id) fetchOrderById(id);
@@ -42,15 +49,16 @@ export default function OrderPage() {
     );
   }
 
-  const steps = [
-    { status: 'Created' as OrderStatus, label: 'Создан', icon: Clock },
-    { status: 'Shipped' as OrderStatus, label: 'Отправлен', icon: Truck },
-    { status: 'Delivered' as OrderStatus, label: 'Доставлен', icon: Check },
-  ];
-
+  /**
+   * Индекс текущего шага
+   */
   const currentStepIndex = steps.findIndex(
     (s) => s.status === currentOrder.status,
   );
+
+  /**
+   * Флаг отмененного заказа
+   */
   const isCancelled = currentOrder.status === 'Cancelled';
 
   const handleUpdateStatus = async (status: OrderStatus) => {
@@ -79,7 +87,7 @@ export default function OrderPage() {
             <p className='text-slate-500 mt-1'>{currentOrder.description}</p>
           </div>
 
-          {/* Action Buttons for simulating state changes */}
+          {/* Кнопки для имитации изменения состояния */}
           <div className='flex flex-wrap gap-2 relative z-10'>
             {currentOrder.status === 'Created' && (
               <>

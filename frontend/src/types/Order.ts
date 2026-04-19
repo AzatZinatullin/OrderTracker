@@ -1,5 +1,11 @@
+/**
+ * Статусы заказа
+ */
 export type OrderStatus = 'Created' | 'Shipped' | 'Delivered' | 'Cancelled';
 
+/**
+ * Enum статусов заказа
+ */
 export const OrderStatusEnum = {
   Created: 'Created' as OrderStatus,
   Shipped: 'Shipped' as OrderStatus,
@@ -7,6 +13,9 @@ export const OrderStatusEnum = {
   Cancelled: 'Cancelled' as OrderStatus,
 };
 
+/**
+ * Ответ при получении заказа
+ */
 export interface OrderResponse {
   id: string;
   orderNumber: string;
@@ -16,10 +25,16 @@ export interface OrderResponse {
   updatedAt: string;
 }
 
+/**
+ * Запрос на создание заказа
+ */
 export interface CreateOrderRequest {
   description: string;
 }
 
+/**
+ * Запрос на обновление статуса заказа
+ */
 export interface UpdateOrderStatusRequest {
   newStatus: OrderStatus;
 }
