@@ -7,7 +7,7 @@
 - **OrderService**: Управляет основным доменом заказов с использованием EF Core и PostgreSQL. Публикует доменные события в RabbitMQ.
 - **NotificationService**: Обрабатывает события из RabbitMQ и отправляет обновления в реальном времени подключенным клиентам через SignalR.
 - **ApiGateway**: Центральный узел (YARP), который маршрутизирует трафик фронтенда в соответствующие микросервисы.
-- **Frontend**: React SPA на базе Vite, TailwindCSS и Zustand. Обновления в реальном времени доставляются через SignalR.
+- **Frontend**: React SPA с использованием Vite, TailwindCSS и Zustand. Обновления в реальном времени доставляются через SignalR.
 - **Observability**: Трассировка OpenTelemetry отправляется в Jaeger.
 
 ## Конфигурация и инструменты
