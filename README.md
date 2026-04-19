@@ -23,15 +23,16 @@ docker-compose up --build
 ### URLs
 
 - **Frontend Application**: http://localhost:3000
-- **API Gateway**: http://localhost:5000
 - **Jaeger Tracing UI**: http://localhost:16686
 - **RabbitMQ Management**: http://localhost:15672
 - **Order Service**: http://localhost:5001/swagger
 
 ## Структура проекта
 
+- `/frontend` - React 18, Vite, Tailwind CSS, TypeScript
 - `/backend/src/OrderTracker.OrderService` - Домен и инфраструктура заказов
 - `/backend/src/OrderTracker.NotificationService` - Обработчики RabbitMQ и SignalR Hub
 - `/backend/src/OrderTracker.ApiGateway` - Конфигурация YARP
 - `/backend/src/OrderTracker.Shared` - C# Records / Events / Exceptions
-- `/frontend` - React 18, Vite, Tailwind CSS, TypeScript
+- `/backend/tests/OrderTracker.OrderService.Tests` - Тесты для OrderService
+- `/backend/tests/OrderTracker.NotificationService.Tests` - Тесты для NotificationService

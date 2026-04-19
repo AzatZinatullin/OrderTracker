@@ -13,8 +13,9 @@ public class CreateOrderValidator : AbstractValidator<CreateOrderRequest>
     /// </summary>
     public CreateOrderValidator()
     {
+        var maxLength = 1000;
         RuleFor(x => x.Description)
             .NotEmpty().WithMessage("Описание заказа обязательно.")
-            .MaximumLength(1000).WithMessage("Описание заказа не должно превышать 1000 символов.");
+            .MaximumLength(maxLength).WithMessage($"Описание заказа не должно превышать {maxLength} символов.");
     }
 }

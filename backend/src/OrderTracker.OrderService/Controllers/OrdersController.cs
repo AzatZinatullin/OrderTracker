@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using OrderTracker.OrderService.Application.DTOs;
 using OrderTracker.OrderService.Application.Interfaces;
@@ -25,14 +26,22 @@ public class OrdersController : ControllerBase
     /// <summary>
     /// Создание нового заказа
     /// </summary>
+    /// <param name="validator">`CreateOrderRequest` валидатор</param>
     /// <param name="request">Запрос на создание заказа</param>
     /// <param name="cancellationToken">Токен отмены</param>
-    /// <returns>Результат операции: 201 (успех) или 400 (неверный запрос) и созданный заказ.</returns>
+    /// <returns>Результат операции: 201 (успех) и созданный заказ или 400 (неверный запрос).</returns>
     [HttpPost]
     [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateOrder(IValidator<CreateOrderRequest> validator, [FromBody] CreateOrderRequest request, CancellationToken cancellationToken)
     {
+        var validationResult = validator.Validate(request);
+        if (!validationResult.IsValid)
+        {
+            // Для простоты и скорости реализации ошибки в виде строки.
+            return BadRequest(string.Join(", ", validationResult.Errors.Select(x => x.ErrorMessage)));
+        }
+
         var response = await _orderService.CreateOrderAsync(request, cancellationToken);
         return CreatedAtAction(nameof(GetOrderById), new { id = response.Id }, response);
     }
@@ -72,6 +81,7 @@ public class OrdersController : ControllerBase
     /// <summary>
     /// Обновление статуса заказа
     /// </summary>
+    /// <param name="validator">`UpdateOrderStatusRequest` валидатор</param>
     /// <param name="id">Идентификатор заказа</param>
     /// <param name="request">Запрос на обновление статуса</param>
     /// <param name="cancellationToken">Токен отмены</param>
@@ -80,8 +90,15 @@ public class OrdersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> UpdateOrderStatus(Guid id, [FromBody] UpdateOrderStatusRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateOrderStatus(IValidator<UpdateOrderStatusRequest> validator, Guid id, [FromBody] UpdateOrderStatusRequest request, CancellationToken cancellationToken)
     {
+        var validationResult = validator.Validate(request);
+        if (!validationResult.IsValid)
+        {
+            // Для простоты и скорости реализации ошибки в виде строки.
+            return BadRequest(string.Join(", ", validationResult.Errors.Select(x => x.ErrorMessage)));
+        }
+
         await _orderService.UpdateOrderStatusAsync(id, request, cancellationToken);
         return Ok();
     }

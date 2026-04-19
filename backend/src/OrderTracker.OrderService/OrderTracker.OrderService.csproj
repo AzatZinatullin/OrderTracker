@@ -32,4 +32,8 @@
     <ProjectReference Include="..\OrderTracker.Shared\OrderTracker.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\ации\" />
+  </ItemGroup>
+
 </Project>

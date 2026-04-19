@@ -8,6 +8,9 @@ using OrderTracker.Shared.Events;
 
 namespace OrderTracker.OrderService.Tests;
 
+/// <summary>
+/// Тесты для OrderService
+/// </summary>
 public class OrderServiceTests
 {
     private readonly Mock<IOrderRepository> _repositoryMock;
@@ -15,6 +18,9 @@ public class OrderServiceTests
     private readonly Mock<ILogger<Application.Services.OrderService>> _loggerMock;
     private readonly Application.Services.OrderService _sut;
 
+    /// <summary>
+    /// Инициализирует новый экземпляр класса <see cref="OrderServiceTests"/>.
+    /// </summary>
     public OrderServiceTests()
     {
         _repositoryMock = new Mock<IOrderRepository>();
@@ -27,6 +33,9 @@ public class OrderServiceTests
             _loggerMock.Object);
     }
 
+    /// <summary>
+    /// Проверяет, что CreateOrderAsync создает заказ и публикует событие
+    /// </summary>
     [Fact]
     public async Task CreateOrderAsync_ShouldCreateAndPublishEvent()
     {
@@ -40,11 +49,13 @@ public class OrderServiceTests
         Assert.NotNull(response);
         Assert.Equal("Test order", response.Description);
         Assert.Equal(OrderStatus.Created, response.Status);
-
         _repositoryMock.Verify(x => x.AddAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()), Times.Once);
         _publisherMock.Verify(x => x.PublishOrderCreatedAsync(It.IsAny<OrderCreatedEvent>(), It.IsAny<CancellationToken>()), Times.Once);
     }
 
+    /// <summary>
+    /// Проверяет, что UpdateOrderStatusAsync обновляет статус и публикует событие
+    /// </summary>
     [Fact]
     public async Task UpdateOrderStatusAsync_ShouldUpdateAndPublishEvent_WhenChanged()
     {

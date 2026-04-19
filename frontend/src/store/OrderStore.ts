@@ -45,7 +45,7 @@ export const useOrderStore = create<OrderState>((set) => ({
       set({ orders, isLoading: false });
     } catch (error: any) {
       set({
-        error: error.message || 'Не удалось загрузить заказы',
+        error: error.response?.data || 'Не удалось создать заказ',
         isLoading: false,
       });
     }
@@ -62,7 +62,7 @@ export const useOrderStore = create<OrderState>((set) => ({
       set({ currentOrder: order, isLoading: false });
     } catch (error: any) {
       set({
-        error: error.message || 'Не удалось загрузить заказ',
+        error: error.response?.data || 'Не удалось создать заказ',
         isLoading: false,
       });
     }
@@ -74,17 +74,22 @@ export const useOrderStore = create<OrderState>((set) => ({
    */
   createOrder: async (description: string) => {
     set({ isLoading: true, error: null });
+      console.log('createOrder')
+
     try {
+      console.log('try creating order')
       await orderApi.createOrder({ description });
       toast.success('Заказ успешно создан!');
       
       set({ isLoading: false });
     } catch (error: any) {
+      const message = error.response?.data || 'Не удалось создать заказ';
+
       set({
-        error: error.message || 'Не удалось создать заказ',
+        error: message,
         isLoading: false,
       });
-      toast.error('Не удалось создать заказ');
+      toast.error(message);
     }
   },
 

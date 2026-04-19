@@ -19,9 +19,8 @@ const steps = [
  * Страница заказа
  */
 export default function OrderPage() {
+  const { currentOrder, fetchOrderById, updateOrderStatus, isLoading } = useOrderStore();
   const { id } = useParams<{ id: string }>();
-  const { currentOrder, fetchOrderById, updateOrderStatus, isLoading } =
-    useOrderStore();
 
   useEffect(() => {
     if (id) fetchOrderById(id);

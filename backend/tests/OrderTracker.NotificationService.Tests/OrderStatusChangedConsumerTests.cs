@@ -10,8 +10,14 @@ using Xunit;
 
 namespace OrderTracker.NotificationService.Tests;
 
+/// <summary>
+/// Тесты для OrderStatusChangedConsumer
+/// </summary>
 public class OrderStatusChangedConsumerTests
 {
+    /// <summary>
+    /// Проверяет, что консьюмер отправляет уведомления в SignalR
+    /// </summary>
     [Fact]
     public async Task Consume_ShouldBroadcastToSignalR()
     {

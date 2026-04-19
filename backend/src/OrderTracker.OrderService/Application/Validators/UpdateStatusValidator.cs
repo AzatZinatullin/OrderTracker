@@ -13,7 +13,6 @@ public class UpdateStatusValidator : AbstractValidator<UpdateOrderStatusRequest>
     /// </summary>
     public UpdateStatusValidator()
     {
-        RuleFor(x => x.NewStatus)
-            .IsInEnum().WithMessage("Недопустимый статус заказа.");
+        RuleFor(x => x.NewStatus).IsInEnum().WithMessage("Недопустимый статус заказа.");
     }
 }

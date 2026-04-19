@@ -32,8 +32,7 @@ public class OrderStatusChangedConsumer : IConsumer<OrderStatusChangedEvent>
     /// <returns>Задача, представляющая асинхронную операцию обработки.</returns>
     public async Task Consume(ConsumeContext<OrderStatusChangedEvent> context)
     {
-        _logger.LogInformation("Received OrderStatusChangedEvent: {OrderId} changed to {NewStatus}", 
-            context.Message.OrderId, context.Message.NewStatus);
+        _logger.LogInformation("Received OrderStatusChangedEvent: {OrderId} changed to {NewStatus}", context.Message.OrderId, context.Message.NewStatus);
             
         // Уведомляем клиентов, просматривающих конкретный заказ
         await _hubContext.Clients.Group($"order-{context.Message.OrderId}").SendAsync("OrderStatusUpdated", context.Message);
