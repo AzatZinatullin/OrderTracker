@@ -133,7 +133,6 @@ public class OrderService : IOrderService
         }
 
         await _repository.DeleteAsync(id, cancellationToken);
-        _logger.LogInformation("Заказ {OrderId} ({OrderNumber}) удален", order.Id, order.OrderNumber);
 
         var deletedEvent = new OrderDeletedEvent
         {
@@ -142,5 +141,7 @@ public class OrderService : IOrderService
         };
         await _eventPublisher.PublishOrderDeletedAsync(deletedEvent, cancellationToken);
         await _repository.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Заказ {OrderId} ({OrderNumber}) удален", order.Id, order.OrderNumber);
     }
 }

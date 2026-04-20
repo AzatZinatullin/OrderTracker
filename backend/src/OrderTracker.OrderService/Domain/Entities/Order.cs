@@ -50,16 +50,16 @@ public class Order
     {
         var orderNumber = GenerateOrderNumber();
 
-        if (orderNumber.Length < OrderLimits.NumberMinLength || orderNumber.Length > OrderLimits.NumberMaxLength)
+        if (orderNumber.Length > OrderLimits.NumberMaxLength)
         {
-            throw new DomainException("Ошибка генерации: номер слишком длинный");
+            throw new DomainException($"Номер заказа не должен превышать {OrderLimits.NumberMaxLength}");
         }
 
         if (string.IsNullOrWhiteSpace(description) 
             || description.Length < OrderLimits.DescriptionMinLength
             || description.Length > OrderLimits.DescriptionMaxLength)
         {
-            throw new DomainException($"Описание должно быть от 1 до {OrderLimits.DescriptionMaxLength} ");
+            throw new DomainException($"Описание заказа должно быть от {OrderLimits.DescriptionMinLength} до {OrderLimits.DescriptionMaxLength} символов");
         }
 
         Id = Guid.NewGuid();
@@ -82,7 +82,7 @@ public class Order
 
         if (Status == OrderStatus.Created && newStatus == OrderStatus.Delivered)
         {
-            throw new DomainException("Нельзя доставить заказ без отправки.");
+            throw new DomainException("Нельзя доставить заказ без предварительной отправки.");
         }
 
         if (Status == newStatus)

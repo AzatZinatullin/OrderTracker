@@ -23,7 +23,7 @@
         /// <summary>
         /// Минимальная длина номера заказа.
         /// </summary>
-        public const int NumberMinLength = 1;
+        public const int NumberMinLength = 10;
 
         /// <summary>
         /// Максимальная длина статуса заказа.
