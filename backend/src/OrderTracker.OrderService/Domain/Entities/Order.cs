@@ -1,5 +1,6 @@
 using OrderTracker.Shared.Constants;
 using OrderTracker.Shared.Enums;
+using OrderTracker.Shared.Exceptions;
 
 namespace OrderTracker.OrderService.Domain.Entities;
 
@@ -47,15 +48,22 @@ public class Order
     /// <param name="description">Описание заказа.</param>
     public Order(string description)
     {
+        var orderNumber = GenerateOrderNumber();
+
+        if (orderNumber.Length < OrderLimits.NumberMinLength || orderNumber.Length > OrderLimits.NumberMaxLength)
+        {
+            throw new DomainException("Ошибка генерации: номер слишком длинный");
+        }
+
         if (string.IsNullOrWhiteSpace(description) 
             || description.Length < OrderLimits.DescriptionMinLength
             || description.Length > OrderLimits.DescriptionMaxLength)
         {
-            throw new ArgumentException($"Описание должно быть от 1 до {OrderLimits.DescriptionMaxLength} ", nameof(description));
+            throw new DomainException($"Описание должно быть от 1 до {OrderLimits.DescriptionMaxLength} ");
         }
 
         Id = Guid.NewGuid();
-        OrderNumber = GenerateOrderNumber();
+        OrderNumber = orderNumber;
         Description = description;
         Status = OrderStatus.Created;
         CreatedAt = DateTimeOffset.UtcNow;
@@ -69,12 +77,12 @@ public class Order
     {
         if (Status == OrderStatus.Delivered || Status == OrderStatus.Cancelled)
         {
-            throw new InvalidOperationException($"Нельзя изменить статус у {Status} заказа.");
+            throw new DomainException($"Нельзя изменить статус у {Status} заказа.");
         }
 
         if (Status == OrderStatus.Created && newStatus == OrderStatus.Delivered)
         {
-            throw new InvalidOperationException("Нельзя доставить заказ без отправки.");
+            throw new DomainException("Нельзя доставить заказ без отправки.");
         }
 
         if (Status == newStatus)

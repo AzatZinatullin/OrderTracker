@@ -74,10 +74,8 @@ export const useOrderStore = create<OrderState>((set) => ({
    */
   createOrder: async (description: string) => {
     set({ isLoading: true, error: null });
-      console.log('createOrder')
 
     try {
-      console.log('try creating order')
       await orderApi.createOrder({ description });
       toast.success('Заказ успешно создан!');
       

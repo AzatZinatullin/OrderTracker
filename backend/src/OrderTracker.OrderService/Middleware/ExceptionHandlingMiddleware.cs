@@ -52,6 +52,7 @@ public class ExceptionHandlingMiddleware
     {
         var statusCode = exception switch
         {
+            DomainException => (int)HttpStatusCode.BadRequest,
             ArgumentException => (int)HttpStatusCode.BadRequest,
             InvalidOperationException => (int)HttpStatusCode.BadRequest,
             NotFoundException => (int)HttpStatusCode.NotFound,

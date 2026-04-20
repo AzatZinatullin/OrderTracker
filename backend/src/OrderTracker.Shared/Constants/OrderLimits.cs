@@ -14,5 +14,20 @@
         /// Минимальная длина описания заказа.
         /// </summary>
         public const int DescriptionMinLength = 1;
+
+        /// <summary>
+        /// Максимальная длина номера заказа.
+        /// </summary>
+        public const int NumberMaxLength = 50;
+
+        /// <summary>
+        /// Минимальная длина номера заказа.
+        /// </summary>
+        public const int NumberMinLength = 1;
+
+        /// <summary>
+        /// Максимальная длина статуса заказа.
+        /// </summary>
+        public const int StatusMaxLength = 30;
     }
 }

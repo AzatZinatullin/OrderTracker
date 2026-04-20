@@ -33,6 +33,6 @@ docker-compose up --build
 - `/backend/src/OrderTracker.OrderService` - Домен и инфраструктура заказов
 - `/backend/src/OrderTracker.NotificationService` - Обработчики RabbitMQ и SignalR Hub
 - `/backend/src/OrderTracker.ApiGateway` - Конфигурация YARP
-- `/backend/src/OrderTracker.Shared` - C# Records / Events / Exceptions
+- `/backend/src/OrderTracker.Shared` - Общие сущности (используются в сервисах, в тестах: Events / Exceptions / Constants и тд.)
 - `/backend/tests/OrderTracker.OrderService.Tests` - Тесты для OrderService
 - `/backend/tests/OrderTracker.NotificationService.Tests` - Тесты для NotificationService
