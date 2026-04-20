@@ -10,7 +10,8 @@
 - **Frontend**: React SPA с использованием Vite, TailwindCSS и Zustand. Обновления в реальном времени доставляются через SignalR.
 - **Observability**: Трассировка OpenTelemetry отправляется в Jaeger.
 - **Clean Architecture**: Разделение на слои (Domain, Application, Infrastructure, API) для обеспечения тестируемости и независимости от внешних фреймворков.
-- **Transactional Outbox (via MassTransit)**: Гарантированная доставка событий об изменении статуса заказа в RabbitMQ.
+- **Transactional Outbox (via MassTransit)**: Гарантированная доставка событий осоздании и изменении статуса заказа в RabbitMQ.
+- **Transactional Inbox**: Обеспечивает идемпотентность в NotificationService, защищая систему от повторной обработки дубликатов сообщений.
 - **Real-time Updates**: Использование SignalR в NotificationService для мгновенного уведомления фронтенда об изменениях без перезагрузки страницы.
 - **Validation & Error Handling**: Централизованная валидация через FluentValidation и глобальная обработка исключений (DomainException, NotFoundException).
 
