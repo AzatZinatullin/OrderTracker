@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  #База данных заказов (PostgreSQL)
+  #База данных заказов (PostgreSQL). User и password должны быть в .env, для простоты здесь оставил.
   order-db:
     image: postgres:15
     environment:
@@ -10,18 +10,28 @@ services:
       POSTGRES_DB: ordersdb
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ordersdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - ./docker-volumes/orderdata:/var/lib/postgresql/data
     networks:
       - ordertracker-network
 
-  #База данных уведомлений (PostgreSQL)
+  #База данных уведомлений (PostgreSQL). User и password должны быть в .env, для простоты здесь оставил.
   notification-db:
     image: postgres:15
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: notificationsdb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d notificationsdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
       - "5433:5432"
     volumes:
@@ -29,7 +39,7 @@ services:
     networks:
       - ordertracker-network
 
-  #Брокер сообщений (RabbitMQ)
+  #Брокер сообщений (RabbitMQ). User и password должны быть в .env, для простоты здесь оставил.
   rabbitmq:
     image: rabbitmq:3-management
     environment:
@@ -58,7 +68,7 @@ services:
     networks:
       - ordertracker-network
 
-  #Сервис заказов (ASP.NET Core)
+  #Сервис заказов (ASP.NET Core). ConnectionStrings должны быть в .env, для простоты здесь оставил.
   order-service:
     build:
       context: ./backend
@@ -73,7 +83,7 @@ services:
       - "5001:80"
     depends_on:
       order-db:
-        condition: service_started
+        condition: service_healthy
       rabbitmq:
         condition: service_healthy
       jaeger:
@@ -81,7 +91,7 @@ services:
     networks:
       - ordertracker-network
 
-  #Сервис уведомлений (ASP.NET Core)
+  #Сервис уведомлений (ASP.NET Core). ConnectionStrings должны быть в .env, для простоты здесь оставил.
   notification-service:
     build:
       context: ./backend
@@ -96,7 +106,7 @@ services:
       - "5002:80"
     depends_on:
       notification-db:
-        condition: service_started
+        condition: service_healthy
       rabbitmq:
         condition: service_healthy
       jaeger:

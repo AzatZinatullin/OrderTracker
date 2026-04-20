@@ -60,7 +60,7 @@ public class OrderServiceTests
     public async Task UpdateOrderStatusAsync_ShouldUpdateAndPublishEvent_WhenChanged()
     {
         // Arrange
-        var order = new Order("ORD-123", "Test");
+        var order = new Order("Test");
         _repositoryMock.Setup(x => x.GetByIdAsync(order.Id, It.IsAny<CancellationToken>()))
             .ReturnsAsync(order);
             

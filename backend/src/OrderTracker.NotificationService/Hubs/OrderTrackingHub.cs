@@ -24,7 +24,7 @@ public class OrderTrackingHub : Hub
     /// <returns>Задача, представляющая асинхронное подключение.</returns>
     public override Task OnConnectedAsync()
     {
-        _logger.LogInformation("Client connected: {ConnectionId}", Context.ConnectionId);
+        _logger.LogInformation("Подключен клиент: {ConnectionId}", Context.ConnectionId);
         return base.OnConnectedAsync();
     }
 
@@ -35,7 +35,7 @@ public class OrderTrackingHub : Hub
     /// <returns>Задача, представляющая асинхронное отключение.</returns>
     public override Task OnDisconnectedAsync(Exception? exception)
     {
-        _logger.LogInformation("Client disconnected: {ConnectionId}", Context.ConnectionId);
+        _logger.LogInformation("Отключен клиент: {ConnectionId}", Context.ConnectionId);
         return base.OnDisconnectedAsync(exception);
     }
 
@@ -46,7 +46,7 @@ public class OrderTrackingHub : Hub
     public async Task JoinOrderGroup(string orderId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, $"order-{orderId}");
-        _logger.LogInformation("Connection {ConnectionId} joined group order-{OrderId}", Context.ConnectionId, orderId);
+        _logger.LogInformation("Клиент {ConnectionId} присоединился к группе order-{OrderId}", Context.ConnectionId, orderId);
     }
 
     /// <summary>
@@ -56,6 +56,6 @@ public class OrderTrackingHub : Hub
     public async Task LeaveOrderGroup(string orderId)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"order-{orderId}");
-        _logger.LogInformation("Connection {ConnectionId} left group order-{OrderId}", Context.ConnectionId, orderId);
+        _logger.LogInformation("Клиент {ConnectionId} покинул группу order-{OrderId}", Context.ConnectionId, orderId);
     }
 }

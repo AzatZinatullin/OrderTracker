@@ -40,12 +40,9 @@ public class OrderService : IOrderService
     /// <returns>Информация о созданном заказ</returns>
     public async Task<OrderResponse> CreateOrderAsync(CreateOrderRequest request, CancellationToken cancellationToken = default)
     {
-        var orderNumber = $"ORD-{DateTimeOffset.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString()[..6].ToUpper()}";
-        var order = new Order(orderNumber, request.Description);
+        var order = new Order(request.Description);
 
         await _repository.AddAsync(order, cancellationToken);
-        _logger.LogInformation("Order created: {OrderId}", order.Id);
-
         var createdEvent = new OrderCreatedEvent
         {
             OrderId = order.Id,
@@ -54,8 +51,11 @@ public class OrderService : IOrderService
             Status = order.Status,
             CreatedAt = order.CreatedAt
         };
+
         await _eventPublisher.PublishOrderCreatedAsync(createdEvent, cancellationToken);
         await _repository.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Заказ {OrderId} создан", order.Id);
 
         return order.ToResponse();
     }
@@ -94,17 +94,16 @@ public class OrderService : IOrderService
         var order = await _repository.GetByIdAsync(id, cancellationToken);
         if (order == null)
         {
-            throw new NotFoundException($"Order with id {id} not found.");
+            throw new NotFoundException($"Заказ с id {id} не найден.");
         }
 
         var previousStatus = order.Status;
         order.UpdateStatus(request.NewStatus);
 
-        await _repository.UpdateAsync(order, cancellationToken);
-        _logger.LogInformation("Order {OrderId} status changed from {PrevStatus} to {NewStatus}", order.Id, previousStatus, order.Status);
-
         if (previousStatus != order.Status)
         {
+            await _repository.UpdateAsync(order, cancellationToken);
+
             var statusChangedEvent = new OrderStatusChangedEvent
             {
                 OrderId = order.Id,
@@ -113,10 +112,11 @@ public class OrderService : IOrderService
                 NewStatus = order.Status,
                 UpdatedAt = order.UpdatedAt
             };
-            await _eventPublisher.PublishOrderStatusChangedAsync(statusChangedEvent, cancellationToken);
-        }
 
-        await _repository.SaveChangesAsync(cancellationToken);
+            await _eventPublisher.PublishOrderStatusChangedAsync(statusChangedEvent, cancellationToken);
+            await _repository.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("Статус заказа {OrderId} изменен с {PrevStatus} на {NewStatus}", order.Id, previousStatus, order.Status);
+        }
     }
 
     /// <summary>
@@ -129,11 +129,11 @@ public class OrderService : IOrderService
         var order = await _repository.GetByIdAsync(id, cancellationToken);
         if (order == null)
         {
-            throw new NotFoundException($"Order with id {id} not found.");
+            throw new NotFoundException($"Заказ с идентификатором {id} не найден.");
         }
 
         await _repository.DeleteAsync(id, cancellationToken);
-        _logger.LogInformation("Order deleted: {OrderId} ({OrderNumber})", order.Id, order.OrderNumber);
+        _logger.LogInformation("Заказ {OrderId} ({OrderNumber}) удален", order.Id, order.OrderNumber);
 
         var deletedEvent = new OrderDeletedEvent
         {

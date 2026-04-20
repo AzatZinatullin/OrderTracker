@@ -38,7 +38,7 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An unhandled exception occurred.");
+            _logger.LogError(ex, "Произошло необработанное исключение.");
             await HandleExceptionAsync(context, ex);
         }
     }

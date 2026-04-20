@@ -1,3 +1,4 @@
+using OrderTracker.Shared.Constants;
 using OrderTracker.Shared.Enums;
 
 namespace OrderTracker.OrderService.Domain.Entities;
@@ -43,13 +44,19 @@ public class Order
     /// <summary>
     /// Создает новый экземпляр класса <see cref="Order" />.
     /// </summary>
-    /// <param name="orderNumber">Номер заказа.</param>
     /// <param name="description">Описание заказа.</param>
-    public Order(string orderNumber, string description)
+    public Order(string description)
     {
+        if (string.IsNullOrWhiteSpace(description) 
+            || description.Length < OrderLimits.DescriptionMinLength
+            || description.Length > OrderLimits.DescriptionMaxLength)
+        {
+            throw new ArgumentException($"Описание должно быть от 1 до {OrderLimits.DescriptionMaxLength} ", nameof(description));
+        }
+
         Id = Guid.NewGuid();
-        OrderNumber = !string.IsNullOrWhiteSpace(orderNumber) ? orderNumber : throw new ArgumentException(nameof(orderNumber));
-        Description = description ?? string.Empty;
+        OrderNumber = GenerateOrderNumber();
+        Description = description;
         Status = OrderStatus.Created;
         CreatedAt = DateTimeOffset.UtcNow;
         UpdatedAt = DateTimeOffset.UtcNow;
@@ -62,20 +69,25 @@ public class Order
     {
         if (Status == OrderStatus.Delivered || Status == OrderStatus.Cancelled)
         {
-            throw new InvalidOperationException($"Cannot change status of a {Status} order.");
+            throw new InvalidOperationException($"Нельзя изменить статус у {Status} заказа.");
         }
 
         if (Status == OrderStatus.Created && newStatus == OrderStatus.Delivered)
         {
-            throw new InvalidOperationException("Order cannot be delivered without being shipped first.");
+            throw new InvalidOperationException("Нельзя доставить заказ без отправки.");
         }
 
         if (Status == newStatus)
         {
-            return; // No change
+            return;
         }
 
         Status = newStatus;
         UpdatedAt = DateTimeOffset.UtcNow;
     }
+
+    /// <summary>
+    /// Генерация номера заказа.
+    /// </summary>
+    private static string GenerateOrderNumber() => $"ORD-{DateTimeOffset.UtcNow:yyyyMMdd}-{Guid.NewGuid().ToString()[..6].ToUpper()}";
 }

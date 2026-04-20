@@ -31,7 +31,7 @@ public class OrderCreatedConsumer : IConsumer<OrderCreatedEvent>
     /// <param name="context">Контекст события.</param>
     public async Task Consume(ConsumeContext<OrderCreatedEvent> context)
     {
-        _logger.LogInformation("Received OrderCreatedEvent for Order {OrderId}", context.Message.OrderId);
+        _logger.LogInformation("Получено событие OrderCreatedEvent для заказа {OrderId}", context.Message.OrderId);
         
         // Уведомить всех клиентов о создании нового заказа
         await _hubContext.Clients.All.SendAsync("OrderCreated", context.Message);

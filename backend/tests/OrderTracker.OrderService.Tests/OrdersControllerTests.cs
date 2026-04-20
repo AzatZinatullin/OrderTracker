@@ -4,6 +4,7 @@ using OrderTracker.OrderService.Application.DTOs;
 using OrderTracker.OrderService.Application.Interfaces;
 using OrderTracker.OrderService.Application.Validators;
 using OrderTracker.OrderService.Controllers;
+using OrderTracker.Shared.Constants;
 using OrderTracker.Shared.Enums;
 
 namespace OrderTracker.OrderService.Tests;
@@ -53,7 +54,7 @@ public class OrdersControllerTests
     public async Task CreateOrder_ReturnsBadRequest_WhenDescriptionIsTooLong()
     {
         // Arrange
-        var longDescription = new string('A', 1010);
+        var longDescription = new string('A', OrderLimits.DescriptionMaxLength + 10);
         var request = new CreateOrderRequest(longDescription);
         var validator = new CreateOrderValidator();
 

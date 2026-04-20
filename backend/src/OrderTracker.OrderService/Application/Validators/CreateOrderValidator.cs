@@ -1,5 +1,6 @@
 using FluentValidation;
 using OrderTracker.OrderService.Application.DTOs;
+using OrderTracker.Shared.Constants;
 
 namespace OrderTracker.OrderService.Application.Validators;
 
@@ -13,9 +14,9 @@ public class CreateOrderValidator : AbstractValidator<CreateOrderRequest>
     /// </summary>
     public CreateOrderValidator()
     {
-        var maxLength = 1000;
         RuleFor(x => x.Description)
-            .NotEmpty().WithMessage("Описание заказа обязательно.")
-            .MaximumLength(maxLength).WithMessage($"Описание заказа не должно превышать {maxLength} символов.");
+            .NotEmpty()
+            .Length(OrderLimits.DescriptionMinLength, OrderLimits.DescriptionMaxLength)
+            .WithMessage($"Описание должно быть от {OrderLimits.DescriptionMinLength} до {OrderLimits.DescriptionMaxLength} символов.");
     }
 }

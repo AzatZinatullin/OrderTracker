@@ -4,8 +4,15 @@ using OrderTracker.OrderService.Domain.Entities;
 
 namespace OrderTracker.OrderService.Infrastructure.Data.Configurations;
 
+/// <summary>
+/// Конфигурация сущности Order
+/// </summary>
 public class OrderConfiguration : IEntityTypeConfiguration<Order>
 {
+    /// <summary>
+    /// Настраивает конфигурацию сущности Order.
+    /// </summary>
+    /// <param name="builder">Построитель сущности Order.</param>
     public void Configure(EntityTypeBuilder<Order> builder)
     {
         builder.HasKey(x => x.Id);

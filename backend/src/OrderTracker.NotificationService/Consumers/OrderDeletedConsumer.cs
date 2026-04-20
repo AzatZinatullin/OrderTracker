@@ -30,7 +30,7 @@ public class OrderDeletedConsumer : IConsumer<OrderDeletedEvent>
     /// <param name="context">Контекст события.</param>
     public async Task Consume(ConsumeContext<OrderDeletedEvent> context)
     {
-        _logger.LogInformation("Consuming OrderDeletedEvent for Order {OrderId}", context.Message.OrderId);
+        _logger.LogInformation("Получено событие OrderDeletedEvent для заказа {OrderId}", context.Message.OrderId);
 
         // Уведомить всех клиентов об удалении
         await _hubContext.Clients.All.SendAsync("OrderDeleted", context.Message);

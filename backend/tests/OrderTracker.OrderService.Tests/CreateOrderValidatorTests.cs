@@ -1,6 +1,5 @@
 using OrderTracker.OrderService.Application.DTOs;
 using OrderTracker.OrderService.Application.Validators;
-using Xunit;
 
 namespace OrderTracker.OrderService.Tests;
 
